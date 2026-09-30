@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fábio Araújo · Filmmaker &amp; Editor</title>
+  <meta name="description" content="Portfolio of Fábio Araújo, filmmaker and editor.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-theme="dark">
+  <a class="skip" href="#work">Skip to work</a>
+
+  <header class="nav" id="nav">
+    <a class="nav__name" href="#top" id="nav-name">Fábio Araújo</a>
+    <button class="nav__toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a href="#work">Work</a>
+      <a href="#stills">Stills</a>
+      <a href="#index">Index</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top" data-theme="dark">
+      <div class="hero__media" id="hero-media"></div>
+      <div class="hero__content">
+        <h1 class="hero__name" id="hero-name"></h1>
+        <div class="hero__side">
+          <p class="hero__role" id="hero-role"></p>
+          <button class="play" id="play-reel" type="button">
+            <span class="play__icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1.5 L12 7 L3 12.5 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+            </span>
+            Play reel
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section work" id="work" data-theme="dark">
+      <div class="section-head reveal">
+        <h2 class="display-head">Selected work</h2>
+        <p class="meta" id="work-count"></p>
+      </div>
+      <div class="work__grid" id="work-grid"></div>
+    </section>
+
+    <section class="section stills" id="stills" data-theme="light">
+      <div class="section-head reveal">
+        <h2 class="serif-head">Stills</h2>
+        <p class="intro" id="site-intro"></p>
+      </div>
+      <div class="plates" id="plates"></div>
+    </section>
+
+    <section class="section index" id="index" data-theme="light">
+      <div class="section-head reveal">
+        <h2 class="serif-head">Index</h2>
+        <div class="filters" id="filters" role="group" aria-label="Filter projects"></div>
+      </div>
+      <div class="index__head" aria-hidden="true">
+        <span>No.</span><span>Title</span><span class="col-cat">Category</span><span class="col-role">Role</span><span class="col-type">Type</span><span class="col-year">Year</span>
+      </div>
+      <ol class="index__list" id="index-list"></ol>
+      <div class="index__preview" id="index-preview" aria-hidden="true"></div>
+    </section>
+
+    <section class="section about" id="about" data-theme="light">
+      <div class="about__grid">
+        <div class="about__portrait reveal" id="portrait"></div>
+        <div class="about__text">
+          <h2 class="serif-head reveal">About</h2>
+          <p class="lede reveal" id="about-text"></p>
+          <div class="cv" id="cv"></div>
+          <p class="cv-file reveal" id="cv-file"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact" data-theme="light">
+      <p class="contact__big reveal">Say <em>hello.</em></p>
+      <a class="contact__email reveal" id="contact-email" href="#"></a>
+      <div class="contact__links reveal" id="contact-links"></div>
+      <footer class="footer">
+        <span id="footer-copy"></span>
+        <a href="#top">Back to top</a>
+      </footer>
+    </section>
+  </main>
+
+  <dialog class="viewer" id="viewer" aria-label="Project">
+    <div class="viewer__bar">
+      <button class="viewer__close" id="viewer-close" type="button">
+        Close
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="viewer-body"></div>
+  </dialog>
+
+  <script src="content.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
