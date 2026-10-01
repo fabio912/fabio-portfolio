@@ -46,6 +46,7 @@ body {
   transition: background-color 0.9s var(--ease), color 0.9s var(--ease);
 }
 img, video { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }

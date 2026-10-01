@@ -7,11 +7,14 @@
   var D = window.PORTFOLIO || { site: {}, cv: [], categories: [], projects: [] };
   var site = D.site || {};
   var cats = D.categories || [];
-  var projects = (D.projects || []).filter(function (p) { return !p.hidden; });
+  // Photo series stay hidden until they have at least one image (cover or gallery)
+  var projects = (D.projects || []).filter(function (p) {
+    if (p.hidden) return false;
+    if (p.type === "photo") return !!(p.cover || (p.gallery && p.gallery.length));
+    return true;
+  });
   var films = projects.filter(function (p) { return p.type !== "photo"; });
   var photos = projects.filter(function (p) { return p.type === "photo"; });
-
-  document.documentElement.classList.add("js");
 
   // ---------- Helpers ----------
   function $(sel) { return document.querySelector(sel); }
@@ -141,6 +144,12 @@
     if (list.length) list.forEach(function (src) { plates.push({ p: p, src: src }); });
     else for (var i = 0; i < 3; i++) plates.push({ p: p, src: null });
   });
+  if (!plates.length) {
+    // No photos yet: hide the Stills section and its menu link
+    $("#stills").hidden = true;
+    var stillsLink = document.querySelector('.nav__links a[href="#stills"]');
+    if (stillsLink) stillsLink.hidden = true;
+  }
   $("#plates").innerHTML = plates.map(function (pl, i) {
     return '<figure class="plate reveal"><a href="#p/' + encodeURIComponent(pl.p.slug) + '" aria-label="' + esc(pl.p.title) + '">' +
       (pl.src ? img(pl.src, pl.p.title) : ph("Photo")) + "</a>" +
@@ -282,6 +291,10 @@
   $("#nav-links").addEventListener("click", function (e) {
     if (e.target.closest("a") && nav.classList.contains("is-open")) toggle.click();
   });
+
+  // Everything rendered: now it is safe to enable the scroll-reveal animation.
+  // (If anything above fails, content stays visible instead of hidden.)
+  document.documentElement.classList.add("js");
 
   // ---------- Theme: dark screening room, then the lights come up ----------
   if ("IntersectionObserver" in window) {
