@@ -2,3 +2,6 @@
 Thumbs.db
 *.swp
 .vscode/
+
+# Full-resolution originals: keep local, never upload
+media/freelance-photo-0*/

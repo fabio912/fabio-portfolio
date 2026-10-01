@@ -139,8 +139,7 @@
   $("#site-intro").textContent = site.stillsIntro || "";
   var plates = [];
   photos.forEach(function (p) {
-    var list = (p.gallery || []).slice();
-    if (!list.length && p.cover) list.push(p.cover);
+    var list = (p.gallery && p.gallery.length ? p.gallery : [p.cover]).filter(Boolean).slice(0, site.stillsPerSeries || 3);
     if (list.length) list.forEach(function (src) { plates.push({ p: p, src: src }); });
     else for (var i = 0; i < 3; i++) plates.push({ p: p, src: null });
   });
