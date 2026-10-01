@@ -13,6 +13,7 @@
   and put its images in media/<slug>/.
   To hide a project without deleting it: add  hidden: true
   To link out (Instagram post, client page): add  link: "https://..."
+  Vertical video (Reels, Shorts): add  aspect: "9:16"
 */
 
 window.PORTFOLIO = {
@@ -27,6 +28,7 @@ window.PORTFOLIO = {
     portrait: "",          // e.g. "media/_site/portrait.jpg"
     about: "[A short paragraph about you: what you make, how you work, what you care about.]",
     cvFile: "",            // optional PDF, e.g. "media/_site/fabio-araujo-cv.pdf"
+    selectedCount: 6,      // how many films show in "Selected work" (featured first); the Index lists everything
     links: {
       instagram: "",
       vimeo: "",
@@ -68,6 +70,7 @@ window.PORTFOLIO = {
     { id: "course",       label: "Course content" },
     { id: "social",       label: "Social" },
     { id: "promo",        label: "Promotional" },
+    { id: "job",          label: "Agency & In-house" },
     { id: "freelance",    label: "Freelance" },
     { id: "personal",     label: "Personal" }
   ],
@@ -163,6 +166,172 @@ window.PORTFOLIO = {
       cover: "https://i.ytimg.com/vi/TmTheiAbqCw/maxresdefault.jpg",
       preview: "",
       video: "https://www.youtube.com/watch?v=TmTheiAbqCw",
+      gallery: []
+    },
+    {
+      slug: "xpand-voices-of-innovation",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "Voices of Innovation - Xpand IT",
+      year: "2024",
+      role: "Ideation, Filming, Color Grading, Editing",
+      client: "Xpand IT",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/fLwOu2kiTf8/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=fLwOu2kiTf8",
+      gallery: []
+    },
+    {
+      slug: "xpand-accessibility",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "Xpand IT - Accessibility",
+      year: "2024",
+      role: "Ideation, Filming, Color Grading, Editing",
+      client: "Xpand IT",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/ZjXIYY6gT3o/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=ZjXIYY6gT3o",
+      gallery: []
+    },
+    {
+      slug: "xpand-jll-success-case",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "Xpand IT - JLL Success Case",
+      year: "2024",
+      role: "Ideation, Filming, Color Grading, Editing",
+      client: "Xpand IT",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/7KYL6vO8-Vw/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=7KYL6vO8-Vw",
+      gallery: []
+    },
+    {
+      slug: "lacaixa-sempre-acompanhados",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "LaCaixa - Sempre Acompanhados",
+      year: "2023",
+      role: "Camera Operator, Assistant Editor, Color Grading",
+      client: "LaCaixa",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/DRKctvTGRSg/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=DRKctvTGRSg",
+      gallery: []
+    },
+    {
+      slug: "one-behind-the-scenes",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "ONE - Behind the Scenes",
+      year: "2023",
+      role: "Editor, Color Grading",
+      client: "ONE",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/71YvvHngGJk/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=71YvvHngGJk",
+      gallery: []
+    },
+    {
+      slug: "one-lifestyle-campaign",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "ONE - Lifestyle Campaign",
+      year: "2023",
+      role: "Editor, Color Grading",
+      client: "ONE",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/fE87Io1VQrg/hqdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=fE87Io1VQrg",
+      aspect: "9:16",                // vertical video (YouTube Short)
+      gallery: []
+    },
+    {
+      slug: "cuf-medicina-dentaria",
+      type: "film",
+      category: "freelance",
+      featured: false,
+      title: "CUF",
+      year: "2023",
+      role: "Editor, Camera Assistant",
+      client: "CUF",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/DEMNyHj35LQ/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=DEMNyHj35LQ",
+      gallery: []
+    },
+    {
+      slug: "rosa-teixeira-case",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "Rosa&Teixeira",
+      year: "2024",
+      role: "Camera Operator, Assistant Editor, Color Grading",
+      client: "Rosa&Teixeira",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/sFgXe4C1rQQ/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=sFgXe4C1rQQ",
+      gallery: []
+    },
+    {
+      slug: "done-in-one-sec",
+      type: "film",
+      category: "freelance",
+      featured: false,
+      title: "Done in ONE Sec.",
+      year: "2023",
+      role: "Editor",
+      client: "[CLIENT]",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/5PRIpddSsP8/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=5PRIpddSsP8",
+      gallery: []
+    },
+    {
+      slug: "sonae-our-day",
+      type: "film",
+      category: "freelance",
+      featured: false,
+      title: "SONAE Our Day",
+      year: "2023",
+      role: "Camera Operator, Editor",
+      client: "SONAE",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/zPJJRwNvhRw/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=zPJJRwNvhRw",
+      gallery: []
+    },
+    {
+      slug: "zurich",
+      type: "film",
+      category: "job",
+      featured: false,
+      title: "Zurich",
+      year: "2023",
+      role: "Camera Operator, Assistant Editor, Color Grading",
+      client: "Zurich",
+      description: "[One or two lines on the project.]",
+      cover: "https://i.ytimg.com/vi/KYs8D9QTMvU/maxresdefault.jpg",
+      preview: "",
+      video: "https://www.youtube.com/watch?v=KYs8D9QTMvU",
       gallery: []
     },
     {

@@ -46,9 +46,14 @@
     return { kind: "link", src: url };
   }
 
-  function player(url, emptyLabel) {
+  function player(url, emptyLabel, aspect) {
     var k = mediaKind(url);
     if (!k) return ph(emptyLabel || "Video: add a Vimeo or YouTube link in content.js", "16/9");
+    var html = playerFrame(k);
+    return aspect === "9:16" ? html.replace('class="frame"', 'class="frame frame--vertical"') : html;
+  }
+
+  function playerFrame(k) {
     if (k.kind === "vimeo") {
       var q = (k.hash ? "h=" + k.hash + "&" : "") + "autoplay=1&title=0&byline=0&portrait=0&dnt=1";
       return '<div class="frame"><iframe src="https://player.vimeo.com/video/' + k.id + "?" + q +
@@ -92,7 +97,9 @@
   });
 
   // ---------- Selected work ----------
-  var selected = films.slice().sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); });
+  var selected = films.slice()
+    .sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); })
+    .slice(0, site.selectedCount || 6);
   $("#work-count").textContent = pad(selected.length) + (selected.length === 1 ? " film" : " films");
   $("#work-grid").innerHTML = selected.map(function (p, i) {
     var media = p.cover ? img(p.cover, p.title) : ph(pad(i + 1) + " · Film still or muted loop");
@@ -214,7 +221,7 @@
     var gallery = (p.gallery || []).map(function (src) { return img(src, p.title); }).join("");
     if (!gallery && isPhoto) gallery = p.cover ? img(p.cover, p.title) : ph("Photo") + ph("Photo") + ph("Photo");
     var html = '<article class="proj">' +
-      (isPhoto ? "" : player(p.video)) +
+      (isPhoto ? "" : player(p.video, null, p.aspect)) +
       '<div class="proj__head"><div><p class="meta">' + (isPhoto ? "Photography" : "Film") + "</p>" +
       '<h2 class="proj__title">' + esc(p.title) + "</h2></div>" +
       '<div><dl class="proj__meta">' + meta + '</dl><p class="proj__desc">' + esc(p.description) + "</p>" +
