@@ -27,27 +27,29 @@
 
   <main>
     <section class="hero" id="top" data-theme="dark">
-      <div class="hero__media" id="hero-media"></div>
-      <div class="hero__content">
+      <div class="hero__top">
         <h1 class="hero__name" id="hero-name"></h1>
         <div class="hero__side">
           <p class="hero__role" id="hero-role"></p>
-          <button class="play" id="play-reel" type="button">
-            <span class="play__icon" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1.5 L12 7 L3 12.5 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-            </span>
-            Play reel
-          </button>
+          <p class="hero__intro" id="hero-intro"></p>
+          <div class="hero__actions">
+            <a class="hero__cta" href="#work">View work</a>
+            <button class="play" id="play-reel" type="button" hidden>
+              <span class="play__icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1.5 L12 7 L3 12.5 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              </span>
+              Play reel
+            </button>
+          </div>
         </div>
+      </div>
+      <div class="strip" id="strip" aria-label="Recent films">
+        <div class="strip__track" id="strip-track"></div>
       </div>
     </section>
 
     <section class="section work" id="work" data-theme="dark">
-      <div class="section-head reveal">
-        <h2 class="display-head">Selected work</h2>
-        <p class="meta" id="work-count"></p>
-      </div>
-      <div class="work__grid" id="work-grid"></div>
+      <div id="work-groups"></div>
     </section>
 
     <section class="section stills" id="stills" data-theme="light">
@@ -76,6 +78,7 @@
         <div class="about__text">
           <h2 class="serif-head reveal">About</h2>
           <p class="lede reveal" id="about-text"></p>
+          <div class="about__body reveal" id="about-body"></div>
           <div class="cv" id="cv"></div>
           <p class="cv-file reveal" id="cv-file"></p>
         </div>
@@ -85,6 +88,7 @@
     <section class="section contact" id="contact" data-theme="light">
       <p class="contact__big reveal">Say <em>hello.</em></p>
       <a class="contact__email reveal" id="contact-email" href="#"></a>
+      <p class="contact__meta reveal" id="contact-meta"></p>
       <div class="contact__links reveal" id="contact-links"></div>
       <footer class="footer">
         <span id="footer-copy"></span>

@@ -77,37 +77,52 @@
   }
 
   // ---------- Hero ----------
-  var heroMedia = $("#hero-media");
-  if (site.showreelLoop) {
-    heroMedia.innerHTML = '<video src="' + esc(site.showreelLoop) + '" autoplay muted loop playsinline' +
-      (site.heroImage ? ' poster="' + esc(site.heroImage) + '"' : "") + "></video>";
-  } else if (site.heroImage) {
-    heroMedia.innerHTML = img(site.heroImage, "");
-  } else {
-    heroMedia.innerHTML = ph("Showreel loop · autoplay, muted");
-  }
-
   var nameParts = String(site.name || "").trim().split(/\s+/);
   $("#hero-name").innerHTML = esc(nameParts[0] || "") + (nameParts.length > 1 ? "<br>" + esc(nameParts.slice(1).join(" ")) : "");
   $("#hero-role").textContent = site.role || "";
+  $("#hero-intro").textContent = site.intro || "";
   $("#nav-name").textContent = site.name || "";
 
-  $("#play-reel").addEventListener("click", function () {
-    openViewer('<div class="viewer__reel">' + player(site.showreel, "Showreel: add your reel link in content.js (site.showreel)") + "</div>", "dark", "Showreel");
-  });
+  // "Play reel" only appears once site.showreel has a link
+  var playBtn = $("#play-reel");
+  if (site.showreel) {
+    playBtn.hidden = false;
+    playBtn.addEventListener("click", function () {
+      openViewer('<div class="viewer__reel">' + player(site.showreel) + "</div>", "dark", "Showreel");
+    });
+  }
 
-  // ---------- Selected work ----------
-  var selected = films.slice()
-    .sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); })
-    .slice(0, site.selectedCount || 6);
-  $("#work-count").textContent = pad(selected.length) + (selected.length === 1 ? " film" : " films");
-  $("#work-grid").innerHTML = selected.map(function (p, i) {
+  // Slow-moving strip of film stills along the bottom of the hero
+  function featuredFirst(list) {
+    return list.slice().sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); });
+  }
+  var stripFilms = featuredFirst(films.filter(function (p) { return p.cover; })).slice(0, site.heroStripCount || 12);
+  function stripItems(copy) {
+    return stripFilms.map(function (p) {
+      return '<a class="strip__item" href="#p/' + encodeURIComponent(p.slug) + '"' +
+        (copy ? ' aria-hidden="true" tabindex="-1"' : "") + ">" + img(p.cover, copy ? "" : p.title) +
+        '<span class="strip__label">' + esc(p.title) + "</span></a>";
+    }).join("");
+  }
+  if (stripFilms.length) $("#strip-track").innerHTML = stripItems(false) + stripItems(true);
+  else $("#strip").hidden = true;
+
+  // ---------- Work, in groups (e.g. Personal & Freelance, Jobs) ----------
+  function card(p, i) {
     var media = p.cover ? img(p.cover, p.title) : ph(pad(i + 1) + " · Film still or muted loop");
     if (p.preview) media += '<video class="card__preview" src="' + esc(p.preview) + '" muted loop playsinline preload="none"></video>';
     return '<a class="card reveal' + (i === 0 ? " card--lead" : "") + '" href="#p/' + encodeURIComponent(p.slug) + '">' +
       '<div class="card__media">' + media + "</div>" +
       '<div class="card__info"><h3 class="card__title">' + esc(p.title) + "</h3>" +
       '<p class="meta">' + joinMeta([catLabel(p.category), p.role, p.year]) + "</p></div></a>";
+  }
+  var groups = D.groups && D.groups.length ? D.groups : [{ title: "Selected work", categories: cats.map(function (c) { return c.id; }) }];
+  $("#work-groups").innerHTML = groups.map(function (g) {
+    var list = featuredFirst(films.filter(function (p) { return g.categories.indexOf(p.category) !== -1; }));
+    if (!list.length) return "";
+    return '<div class="work-group"><div class="section-head reveal"><h2 class="display-head">' + esc(g.title) + "</h2>" +
+      '<p class="meta">' + pad(list.length) + (list.length === 1 ? " film" : " films") + "</p></div>" +
+      '<div class="work__grid">' + list.map(card).join("") + "</div></div>";
   }).join("");
 
   Array.prototype.forEach.call(document.querySelectorAll(".card"), function (card) {
@@ -118,7 +133,7 @@
   });
 
   // ---------- Stills ----------
-  $("#site-intro").textContent = site.intro || "";
+  $("#site-intro").textContent = site.stillsIntro || "";
   var plates = [];
   photos.forEach(function (p) {
     var list = (p.gallery || []).slice();
@@ -133,7 +148,10 @@
   }).join("");
 
   // ---------- Index ----------
-  var filters = [{ id: "all", label: "All" }].concat(cats);
+  // Only show filters that have at least one project
+  var filters = [{ id: "all", label: "All" }].concat(cats.filter(function (c) {
+    return projects.some(function (p) { return p.category === c.id; });
+  }));
   $("#filters").innerHTML = filters.map(function (f, i) {
     return '<button class="filter" type="button" data-cat="' + esc(f.id) + '" aria-pressed="' + (i === 0) + '">' + esc(f.label) + "</button>";
   }).join("");
@@ -173,7 +191,9 @@
 
   // ---------- About / CV ----------
   $("#portrait").innerHTML = site.portrait ? img(site.portrait, site.name) : ph("Portrait · 4:5");
-  $("#about-text").textContent = site.about || "";
+  var about = [].concat(site.about || []);
+  $("#about-text").textContent = about[0] || "";
+  $("#about-body").innerHTML = about.slice(1).map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("");
   $("#cv").innerHTML = (D.cv || []).map(function (g) {
     return '<div class="cv__group reveal"><h3 class="label">' + esc(g.title) + "</h3><ul>" +
       (g.items || []).map(function (it) {
@@ -189,13 +209,13 @@
   email.href = /@/.test(site.email || "") ? "mailto:" + site.email : "#contact";
   var linkNames = { instagram: "Instagram", vimeo: "Vimeo", youtube: "YouTube", linkedin: "LinkedIn" };
   var links = site.links || {};
-  $("#contact-links").innerHTML = Object.keys(links).map(function (k) {
-    var url = links[k];
-    var label = linkNames[k] || k;
-    return url
-      ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(label) + "</a>"
-      : '<a href="#contact">[' + esc(label.toUpperCase()) + "]</a>";
+  $("#contact-links").innerHTML = Object.keys(links).filter(function (k) { return links[k]; }).map(function (k) {
+    return '<a href="' + esc(links[k]) + '" target="_blank" rel="noopener">' + esc(linkNames[k] || k) + "</a>";
   }).join("");
+  var contactMeta = [];
+  if (site.phone) contactMeta.push('<a href="tel:' + esc(site.phone.replace(/\s+/g, "")) + '">' + esc(site.phone) + "</a>");
+  if (site.location) contactMeta.push("<span>" + esc(site.location) + "</span>");
+  $("#contact-meta").innerHTML = contactMeta.join("");
   $("#footer-copy").textContent = "© " + new Date().getFullYear() + " " + (site.name || "");
 
   // ---------- Viewer (project pages and reel) ----------

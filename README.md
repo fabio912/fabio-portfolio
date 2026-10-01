@@ -14,10 +14,11 @@ Everything you change lives in **`content.js`**. You never need to edit HTML.
 | Add photos | Export them for web (JPG, about 2400 px on the long edge, under 1 MB), put them in `media/<slug>/`, list them in `gallery` |
 | Set a cover image | Put `cover.jpg` in the project folder and set `cover: "media/<slug>/cover.jpg"` |
 | Hide a project | Add `hidden: true` |
-| Change your reel | Paste the new link into `site.showreel` |
-| Hero background loop | Put a short muted `.mp4` in `media/_site/` and set `site.showreelLoop` |
+| Add a showreel | Paste its link into `site.showreel`; a "Play reel" button appears in the hero |
+| Hero film strip | Shows film covers automatically (featured first); change how many with `site.heroStripCount` |
+| Work sections | Edit `groups`: each lists the categories it shows (e.g. Personal & Freelance, Jobs) |
 | Hover preview on a film | Short muted `.mp4` in the project folder, set `preview` |
-| Feature a film | `featured: true` puts it first and full width |
+| Feature a film | `featured: true` puts it first and full width in its section, and first in the hero strip |
 | Update your CV | Edit the `cv` list; add a PDF with `site.cvFile` |
 
 Empty fields show a clearly marked placeholder, so the site never breaks while content is missing.
