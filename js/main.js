@@ -35,6 +35,22 @@
   function img(src, alt) {
     return '<img src="' + esc(src) + '" alt="' + esc(alt) + '" loading="lazy">';
   }
+  // Justified photo rows: each photo keeps its own shape and every row fills the width.
+  // Aspect ratios come from media/photo-sizes.js; photos missing there are measured on load.
+  function ratioOf(src) { return (window.PHOTO_SIZES || {})[src] || 1.5; }
+  function jitem(src, href, alt) {
+    var tag = href ? "a" : "div";
+    return "<" + tag + ' class="jitem"' + (href ? ' href="' + href + '"' : "") + ' style="--r:' + ratioOf(src) + '">' +
+      img(src, alt) + "</" + tag + ">";
+  }
+  function fixRatios(root) {
+    Array.prototype.forEach.call(root.querySelectorAll(".jitem img"), function (im) {
+      if ((window.PHOTO_SIZES || {})[im.getAttribute("src")]) return;
+      function set() { if (im.naturalWidth) im.parentNode.style.setProperty("--r", im.naturalWidth / im.naturalHeight); }
+      if (im.complete) set(); else im.addEventListener("load", set);
+    });
+  }
+
   function joinMeta(parts) {
     return parts.filter(Boolean).map(esc).join(" / ");
   }
@@ -137,23 +153,50 @@
 
   // ---------- Stills ----------
   $("#site-intro").textContent = site.stillsIntro || "";
-  var plates = [];
-  photos.forEach(function (p) {
-    var list = (p.gallery && p.gallery.length ? p.gallery : [p.cover]).filter(Boolean).slice(0, site.stillsPerSeries || 3);
-    if (list.length) list.forEach(function (src) { plates.push({ p: p, src: src }); });
-    else for (var i = 0; i < 3; i++) plates.push({ p: p, src: null });
-  });
-  if (!plates.length) {
+  function photosOf(p) { return (p.gallery && p.gallery.length ? p.gallery : [p.cover]).filter(Boolean); }
+  function realText(t) { return t && t.charAt(0) !== "[" ? t : ""; }   // skip "[placeholder]" copy
+
+  if (!photos.length) {
     // No photos yet: hide the Stills section and its menu link
     $("#stills").hidden = true;
     var stillsLink = document.querySelector('.nav__links a[href="#stills"]');
     if (stillsLink) stillsLink.hidden = true;
   }
-  $("#plates").innerHTML = plates.map(function (pl, i) {
-    return '<figure class="plate reveal"><a href="#p/' + encodeURIComponent(pl.p.slug) + '" aria-label="' + esc(pl.p.title) + '">' +
-      (pl.src ? img(pl.src, pl.p.title) : ph("Photo")) + "</a>" +
-      "<figcaption><em>Plate " + pad(i + 1) + ".</em> " + esc(pl.p.title) + (pl.p.year ? ", " + esc(pl.p.year) : "") + "</figcaption></figure>";
+
+  // One tab per photo series: cover, title, count
+  $("#series-tabs").innerHTML = photos.map(function (p, i) {
+    var n = photosOf(p).length;
+    return '<button class="series-tab" type="button" role="tab" id="tab-' + esc(p.slug) + '" aria-controls="series-panel" aria-selected="' + (i === 0) + '" data-slug="' + esc(p.slug) + '">' +
+      '<span class="series-tab__img">' + (p.cover ? img(p.cover, "") : "") + "</span>" +
+      '<span class="series-tab__text"><span class="series-tab__title">' + esc(p.title) + "</span>" +
+      '<span class="series-tab__meta">' + n + (n === 1 ? " photo" : " photos") + "</span></span></button>";
   }).join("");
+
+  function showSeries(slug) {
+    var p = photos.find(function (x) { return x.slug === slug; }) || photos[0];
+    if (!p) return;
+    Array.prototype.forEach.call(document.querySelectorAll(".series-tab"), function (t) {
+      t.setAttribute("aria-selected", String(t.dataset.slug === p.slug));
+    });
+    var all = photosOf(p);
+    var shown = all.slice(0, site.stillsPerSeries || 12);
+    var href = "#p/" + encodeURIComponent(p.slug);
+    var panel = $("#series-panel");
+    panel.setAttribute("aria-labelledby", "tab-" + p.slug);
+    panel.innerHTML = '<div class="jgrid">' + shown.map(function (src) { return jitem(src, href, p.title); }).join("") + "</div>" +
+      '<div class="series-panel__foot">' +
+      (realText(p.description) ? '<p class="series-panel__desc">' + esc(p.description) + "</p>" : "<span></span>") +
+      '<a class="series-panel__more" href="' + href + '">View all ' + all.length + " " + esc(p.title) + " photos</a></div>";
+    fixRatios(panel);
+    panel.classList.remove("is-switching");
+    void panel.offsetWidth;   // restart the fade
+    panel.classList.add("is-switching");
+  }
+  $("#series-tabs").addEventListener("click", function (e) {
+    var t = e.target.closest(".series-tab");
+    if (t) showSeries(t.dataset.slug);
+  });
+  if (photos.length) showSeries(photos[0].slug);
 
   // ---------- Index ----------
   // Only show filters that have at least one project
@@ -246,18 +289,18 @@
     var meta = [["Role", p.role], ["Client", p.client], ["Category", catLabel(p.category)], ["Year", p.year]]
       .filter(function (m) { return m[1]; })
       .map(function (m) { return "<div><dt>" + m[0] + "</dt><dd>" + esc(m[1]) + "</dd></div>"; }).join("");
-    var gallery = (p.gallery || []).map(function (src) { return img(src, p.title); }).join("");
-    if (!gallery && isPhoto) gallery = p.cover ? img(p.cover, p.title) : ph("Photo") + ph("Photo") + ph("Photo");
+    var gallery = (isPhoto ? photosOf(p) : (p.gallery || [])).map(function (src) { return jitem(src, null, p.title); }).join("");
     var html = '<article class="proj">' +
       (isPhoto ? "" : player(p.video, null, p.aspect)) +
       '<div class="proj__head"><div><p class="meta">' + (isPhoto ? "Photography" : "Film") + "</p>" +
       '<h2 class="proj__title">' + esc(p.title) + "</h2></div>" +
-      '<div><dl class="proj__meta">' + meta + '</dl><p class="proj__desc">' + esc(p.description) + "</p>" +
+      '<div><dl class="proj__meta">' + meta + '</dl>' + (realText(p.description) ? '<p class="proj__desc">' + esc(p.description) + "</p>" : "") +
       (p.link ? '<p class="proj__link"><a href="' + esc(p.link) + '" target="_blank" rel="noopener">View on ' + esc(hostLabel(p.link)) + "</a></p>" : "") +
       "</div></div>" +
-      (gallery ? '<div class="proj__gallery">' + gallery + "</div>" : "") +
+      (gallery ? '<div class="jgrid proj__gallery">' + gallery + "</div>" : "") +
       "</article>";
     openViewer(html, isPhoto ? "light" : "dark", p.title);
+    fixRatios(viewerBody);
   }
 
   function closeViewer() { if (viewer.open) viewer.close(); }
