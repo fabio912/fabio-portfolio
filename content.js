@@ -23,7 +23,7 @@ window.PORTFOLIO = {
     intro: "My work combines storytelling, strategy, and technical execution.",
     email: "fabioaraujoprofissional@gmail.com",
     phone: "",             // optional, shown in Contact if filled, e.g. "+351 ..."
-    location: "Lisbon, Portugal",
+    location: "Porto, Portugal",
     showreel: "",          // when you have a reel: Vimeo or YouTube link adds a "Play reel" button to the hero
     heroStripCount: 12,    // how many film stills scroll along the bottom of the hero (featured first)
     stillsIntro: "",       // optional line next to the "Stills" heading
