@@ -158,8 +158,15 @@
   var groups = D.groups && D.groups.length ? D.groups : [{ title: "Selected work", categories: cats.map(function (c) { return c.id; }) }];
   // A full-width lead card only when it leaves the rows even (odd counts), so no row has a gap
   function grid(list) {
-    var lead = list.length % 2 === 1 && list.length > 1;
-    return '<div class="work__grid">' + list.map(function (p, i) { return card(p, i, lead) + cardSet(p); }).join("") + "</div>";
+    // Multi-video projects (CXL) show all their videos directly; everything else is a card
+    var walls = list.filter(function (p) { return p.videos && p.videos.length; });
+    var cards = list.filter(function (p) { return !(p.videos && p.videos.length); });
+    var lead = cards.length % 2 === 1 && cards.length > 1;
+    return (cards.length ? '<div class="work__grid">' + cards.map(function (p, i) { return card(p, i, lead); }).join("") + "</div>" : "") +
+      walls.map(function (p) {
+        return '<div class="vwall reveal"><p class="vwall__desc"><span class="meta">' + esc(p.role) + "</span> " + esc(p.description) + "</p>" +
+          videoSet(p.videos, true) + "</div>";
+      }).join("");
   }
   // Counts videos, so a multi-video project (CXL) counts each of its clips
   function count(list) {
@@ -185,10 +192,11 @@
   }).join("");
 
   $("#work-groups").addEventListener("click", function (e) {
-    var b = e.target.closest(".card-set__item");
+    var b = e.target.closest(".vset__play, .card-set__item");
     if (!b) return;
-    openViewer('<div class="viewer__reel">' + player(b.dataset.url, null, "9:16") +
-      '<p class="meta viewer__caption">' + esc(b.dataset.title) + "</p></div>", "dark", b.dataset.title);
+    var title = b.dataset.title || b.getAttribute("aria-label").replace(/^Play /, "");
+    openViewer('<div class="viewer__reel">' + player(b.dataset.url, null, b.dataset.aspect || "9:16") +
+      '<p class="meta viewer__caption">' + esc(title) + "</p></div>", "dark", title);
   });
 
   Array.prototype.forEach.call(document.querySelectorAll(".card"), function (card) {
@@ -353,7 +361,7 @@
 
   // A set of videos shown as thumbnails; a click swaps in the real player
   function ytId(url) { var k = mediaKind(url); return k && k.kind === "youtube" ? k.id : ""; }
-  function videoSet(list) {
+  function videoSet(list, wall) {
     if (!list || !list.length) return "";
     function block(label, items, cls) {
       if (!items.length) return "";
@@ -368,7 +376,7 @@
     }
     var wide = list.filter(function (v) { return v.aspect !== "9:16"; });
     var tall = list.filter(function (v) { return v.aspect === "9:16"; });
-    return '<div class="vset-wrap">' + block("Promos · 16:9", wide, "vset__grid--wide") + block("Shorts &amp; reels · 9:16", tall, "vset__grid--tall") + "</div>";
+    return '<div class="vset-wrap' + (wall ? " vset-wrap--wall" : "") + '">' + block("Promos · 16:9", wide, "vset__grid--wide") + block("Shorts &amp; reels · 9:16", tall, "vset__grid--tall") + "</div>";
   }
   viewerBody.addEventListener("click", function (e) {
     var b = e.target.closest(".vset__play");

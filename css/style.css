@@ -396,6 +396,15 @@ button { font: inherit; color: inherit; }
 }
 .work-sub__count { margin-left: auto; }
 
+/* All of a multi-video project's videos shown directly (CXL) */
+.vwall__desc { margin: 0 0 8px; max-width: 760px; font-size: 15px; color: var(--muted); }
+.vwall__desc .meta { color: var(--fg); margin-right: 10px; }
+.vset-wrap--wall { margin-top: 28px; gap: 40px; }
+.vset-wrap--wall .vset__grid--wide { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.vset-wrap--wall .vset__grid--tall { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.vset-wrap--wall .vset__item figcaption { font-size: 13px; line-height: 1.35; }
+.vset-wrap--wall .vset__grid--tall .vset__icon { width: 40px; height: 40px; margin: -20px 0 0 -20px; }
+
 /* Row of vertical clips beside a multi-video card */
 .card-set { display: flex; flex-direction: column; gap: 14px; }
 .card-set__row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
@@ -861,6 +870,17 @@ a.jitem:hover img { transform: scale(1.03); }
   .work__grid { grid-template-columns: minmax(0, 1fr); }
   .card__media { aspect-ratio: 16 / 9; }
   .work-sub__count { margin-left: 0; }
+  .vset-wrap--wall .vset__grid--wide { grid-template-columns: minmax(0, 1fr); }
+  .vset-wrap--wall .vset__grid--tall {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 40%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-right: calc(var(--gutter) * -1);
+    padding-right: var(--gutter);
+  }
+  .vset-wrap--wall .vset__grid--tall .vset__item { scroll-snap-align: start; }
   /* clips become a swipeable strip under the card */
   .card-set { margin-top: -24px; }
   .card-set__row {
