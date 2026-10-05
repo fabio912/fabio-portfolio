@@ -100,6 +100,9 @@
   $("#hero-name").innerHTML = esc(nameParts[0] || "") + (nameParts.length > 1 ? "<br>" + esc(nameParts.slice(1).join(" ")) : "");
   $("#hero-role").textContent = site.role || "";
   $("#hero-intro").textContent = site.intro || "";
+  $("#hero-services").innerHTML = (site.services || []).map(function (sv) {
+    return '<li><a href="' + esc(sv.href || "#work") + '">' + esc(sv.label) + "</a></li>";
+  }).join("");
   $("#nav-name").textContent = site.name || "";
 
   // "Play reel" only appears once site.showreel has a link
@@ -291,17 +294,47 @@
       .map(function (m) { return "<div><dt>" + m[0] + "</dt><dd>" + esc(m[1]) + "</dd></div>"; }).join("");
     var gallery = (isPhoto ? photosOf(p) : (p.gallery || [])).map(function (src) { return jitem(src, null, p.title); }).join("");
     var html = '<article class="proj">' +
-      (isPhoto ? "" : player(p.video, null, p.aspect)) +
+      (isPhoto || (p.videos && p.videos.length) ? "" : player(p.video, null, p.aspect)) +
       '<div class="proj__head"><div><p class="meta">' + (isPhoto ? "Photography" : "Film") + "</p>" +
       '<h2 class="proj__title">' + esc(p.title) + "</h2></div>" +
       '<div><dl class="proj__meta">' + meta + '</dl>' + (realText(p.description) ? '<p class="proj__desc">' + esc(p.description) + "</p>" : "") +
       (p.link ? '<p class="proj__link"><a href="' + esc(p.link) + '" target="_blank" rel="noopener">View on ' + esc(hostLabel(p.link)) + "</a></p>" : "") +
       "</div></div>" +
+      videoSet(p.videos) +
       (gallery ? '<div class="jgrid proj__gallery">' + gallery + "</div>" : "") +
       "</article>";
     openViewer(html, isPhoto ? "light" : "dark", p.title);
     fixRatios(viewerBody);
   }
+
+  // A set of videos shown as thumbnails; a click swaps in the real player
+  function ytId(url) { var k = mediaKind(url); return k && k.kind === "youtube" ? k.id : ""; }
+  function videoSet(list) {
+    if (!list || !list.length) return "";
+    function block(label, items, cls) {
+      if (!items.length) return "";
+      return '<section class="vset"><p class="meta vset__label">' + label + "</p>" +
+        '<div class="vset__grid ' + cls + '">' + items.map(function (v) {
+          var id = ytId(v.url), vertical = v.aspect === "9:16";
+          var thumb = v.thumb || (id ? "https://i.ytimg.com/vi/" + id + (vertical ? "/oar2.jpg" : "/maxresdefault.jpg") : "");
+          return '<figure class="vset__item"><button class="vset__play' + (vertical ? " is-vertical" : "") + '" type="button" data-url="' + esc(v.url) + '" data-aspect="' + esc(v.aspect || "16:9") + '" aria-label="Play ' + esc(v.title) + '">' +
+            (thumb ? img(thumb, "") : "") + '<span class="vset__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 14 14"><path d="M3 1.5 L12 7 L3 12.5 Z" fill="currentColor"/></svg></span></button>' +
+            "<figcaption>" + esc(v.title) + "</figcaption></figure>";
+        }).join("") + "</div></section>";
+    }
+    var wide = list.filter(function (v) { return v.aspect !== "9:16"; });
+    var tall = list.filter(function (v) { return v.aspect === "9:16"; });
+    return '<div class="vset-wrap">' + block("Promos · 16:9", wide, "vset__grid--wide") + block("Shorts &amp; reels · 9:16", tall, "vset__grid--tall") + "</div>";
+  }
+  viewerBody.addEventListener("click", function (e) {
+    var b = e.target.closest(".vset__play");
+    if (!b) return;
+    var holder = document.createElement("div");
+    holder.innerHTML = player(b.dataset.url, null, b.dataset.aspect);
+    var frame = holder.firstChild;
+    frame.classList.add("vset__frame");
+    b.replaceWith(frame);
+  });
 
   function closeViewer() { if (viewer.open) viewer.close(); }
   $("#viewer-close").addEventListener("click", closeViewer);
@@ -314,7 +347,12 @@
 
   function route() {
     var m = location.hash.match(/^#p\/(.+)$/);
-    if (m) openProject(decodeURIComponent(m[1]));
+    if (m) return openProject(decodeURIComponent(m[1]));
+    var st = location.hash.match(/^#stills\/(.+)$/);
+    if (st && photos.length) {
+      showSeries(decodeURIComponent(st[1]));
+      $("#stills").scrollIntoView();
+    }
   }
   window.addEventListener("hashchange", route);
   route();

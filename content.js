@@ -20,6 +20,14 @@ window.PORTFOLIO = {
   site: {
     name: "Fábio Araújo",
     role: "Filmmaker & Editor",
+    // Services listed in the hero. Each one links to the work that proves it:
+    // "#work" (films), "#stills/<series>" (opens that photo series), "#p/<project>" (opens a project).
+    services: [
+      { label: "Film production & direction", href: "#work" },
+      { label: "Editing & color grading",      href: "#work" },
+      { label: "Wedding & couples photography", href: "#stills/couples" },
+      { label: "B2B & social content",         href: "#p/cxl-repurposing" }
+    ],
     intro: "My work combines storytelling, strategy, and technical execution.",
     email: "fabioaraujoprofissional@gmail.com",
     phone: "",             // optional, shown in Contact if filled, e.g. "+351 ..."
@@ -331,6 +339,33 @@ window.PORTFOLIO = {
       gallery: []
     },
     {
+      slug: "cxl-repurposing",
+      type: "film",
+      category: "cxl",
+      featured: false,
+      title: "CXL - Course Content, Repurposed",
+      year: "2026",
+      role: "Editor, Colorist",
+      client: "CXL",
+      description: "Long-form CXL course lessons cut into promos (16:9) and short-form clips (9:16) for B2B marketing audiences.",
+      cover: "https://i.ytimg.com/vi/638fFC6vCtg/maxresdefault.jpg",
+      preview: "",
+      video: "",
+      // Several videos on one project page. aspect "16:9" = promos row, "9:16" = shorts row.
+      videos: [
+        { title: "Marketing Brain",                                    url: "https://youtu.be/638fFC6vCtg", aspect: "16:9" },
+        { title: "Build your marketing insight & reporting agent",     url: "https://youtu.be/AucfC-OK8BY", aspect: "16:9" },
+        { title: "How to Turn Product Hunt Data Into Market Insights", url: "https://youtu.be/juxe6S3ZDIs", aspect: "16:9" },
+        { title: "Build your marketing insight & reporting agent",     url: "https://youtube.com/shorts/uHpgs-Y2FcA", aspect: "9:16" },
+        { title: "Using Claude Code to build better marketing systems", url: "https://youtube.com/shorts/x39LAyhqqpc", aspect: "9:16" },
+        { title: "Find the topics that improve outbound reply rates",  url: "https://youtube.com/shorts/Y4Ihivstbpg", aspect: "9:16" },
+        { title: "Build agents to improve ad performance",             url: "https://youtube.com/shorts/AsD2mOu5tsM", aspect: "9:16" },
+        { title: "LinkedIn Thought Leader Ads",                        url: "https://youtube.com/shorts/Z3_Vm0xi068", aspect: "9:16" },
+        { title: "LinkedIn Thought Leader Ads, part 2",                url: "https://youtube.com/shorts/5j9UGA1lhfo", aspect: "9:16" }
+      ],
+      gallery: []
+    },
+    {
       slug: "inertia",
       type: "film",
       category: "personal",
@@ -373,6 +408,21 @@ window.PORTFOLIO = {
       cover: "https://i.ytimg.com/vi/Dhjq57tZiLE/hqdefault.jpg",
       preview: "",
       video: "https://www.youtube.com/watch?v=Dhjq57tZiLE",
+      gallery: []
+    },
+    {
+      slug: "scotland-2025",
+      type: "film",
+      category: "personal",
+      featured: false,
+      title: "Scotland 2025",
+      year: "2025",
+      role: "Ideation, Filming, Color Grading, Editing",
+      client: "",
+      description: "One of the best trips I had!",
+      cover: "https://i.ytimg.com/vi/VveCBYyXmbQ/maxresdefault.jpg",
+      preview: "",
+      video: "https://youtu.be/VveCBYyXmbQ",
       gallery: []
     },
     {

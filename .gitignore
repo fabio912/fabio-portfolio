@@ -5,3 +5,7 @@ Thumbs.db
 
 # Full-resolution originals: keep local, never upload
 media/freelance-photo-0*/
+
+# CXL video originals (1.5 GB) and local preview copies: never upload
+media/cxl/
+media/cxl-clips/
