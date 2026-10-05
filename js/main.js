@@ -130,22 +130,66 @@
   else $("#strip").hidden = true;
 
   // ---------- Work, in groups (e.g. Personal & Freelance, Jobs) ----------
-  function card(p, i) {
+  function card(p, i, lead) {
     var media = p.cover ? img(p.cover, p.title) : ph(pad(i + 1) + " · Film still or muted loop");
     if (p.preview) media += '<video class="card__preview" src="' + esc(p.preview) + '" muted loop playsinline preload="none"></video>';
-    return '<a class="card reveal' + (i === 0 ? " card--lead" : "") + '" href="#p/' + encodeURIComponent(p.slug) + '">' +
+    return '<a class="card reveal' + (lead && i === 0 ? " card--lead" : "") + '" href="#p/' + encodeURIComponent(p.slug) + '">' +
       '<div class="card__media">' + media + "</div>" +
       '<div class="card__info"><h3 class="card__title">' + esc(p.title) + "</h3>" +
       '<p class="meta">' + joinMeta([catLabel(p.category), p.role, p.year]) + "</p></div></a>";
   }
+  // For projects with several videos (e.g. CXL): a row of the vertical clips next to the card
+  function cardSet(p) {
+    if (!p.videos || !p.videos.length) return "";
+    var tall = p.videos.filter(function (v) { return v.aspect === "9:16"; });
+    var wide = p.videos.length - tall.length;
+    if (!tall.length) return "";
+    return '<div class="card-set reveal"><p class="meta">Shorts &amp; reels · 9:16</p><div class="card-set__row">' +
+      tall.map(function (v) {
+        var id = ytId(v.url);
+        var thumb = v.thumb || (id ? "https://i.ytimg.com/vi/" + id + "/oar2.jpg" : "");
+        return '<button class="card-set__item" type="button" data-url="' + esc(v.url) + '" data-title="' + esc(v.title) + '" aria-label="Play ' + esc(v.title) + '">' +
+          (thumb ? img(thumb, "") : "") + '<span class="vset__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1.5 L12 7 L3 12.5 Z" fill="currentColor"/></svg></span></button>';
+      }).join("") + "</div>" +
+      '<a class="card-set__more" href="#p/' + encodeURIComponent(p.slug) + '">View all ' + p.videos.length + " videos" +
+      (wide ? " (" + wide + " promos, " + tall.length + " shorts)" : "") + "</a></div>";
+  }
+
   var groups = D.groups && D.groups.length ? D.groups : [{ title: "Selected work", categories: cats.map(function (c) { return c.id; }) }];
+  // A full-width lead card only when it leaves the rows even (odd counts), so no row has a gap
+  function grid(list) {
+    var lead = list.length % 2 === 1 && list.length > 1;
+    return '<div class="work__grid">' + list.map(function (p, i) { return card(p, i, lead) + cardSet(p); }).join("") + "</div>";
+  }
+  // Counts videos, so a multi-video project (CXL) counts each of its clips
+  function count(list) {
+    var multi = list.some(function (p) { return p.videos && p.videos.length; });
+    var n = list.reduce(function (t, p) { return t + (p.videos && p.videos.length ? p.videos.length : 1); }, 0);
+    var word = multi ? "video" : "film";
+    return pad(n) + " " + word + (n === 1 ? "" : "s");
+  }
   $("#work-groups").innerHTML = groups.map(function (g) {
-    var list = featuredFirst(films.filter(function (p) { return g.categories.indexOf(p.category) !== -1; }));
-    if (!list.length) return "";
-    return '<div class="work-group"><div class="section-head reveal"><h2 class="display-head">' + esc(g.title) + "</h2>" +
-      '<p class="meta">' + pad(list.length) + (list.length === 1 ? " film" : " films") + "</p></div>" +
-      '<div class="work__grid">' + list.map(card).join("") + "</div></div>";
+    var all = films.filter(function (p) { return g.categories.indexOf(p.category) !== -1; });
+    if (!all.length) return "";
+    var head = '<div class="section-head reveal"><h2 class="display-head">' + esc(g.title) + "</h2>" +
+      '<p class="meta">' + count(all) + "</p></div>";
+    if (!g.split) return '<div class="work-group">' + head + grid(featuredFirst(all)) + "</div>";
+    return '<div class="work-group">' + head + g.categories.map(function (id) {
+      var list = featuredFirst(all.filter(function (p) { return p.category === id; }));
+      if (!list.length) return "";
+      var c = cats.find(function (x) { return x.id === id; }) || { label: id };
+      return '<div class="work-sub"><div class="work-sub__head reveal"><h3 class="work-sub__title">' + esc(c.label) + "</h3>" +
+        (c.note ? '<p class="meta">' + esc(c.note) + "</p>" : "") + '<p class="meta work-sub__count">' + count(list) + "</p></div>" +
+        grid(list) + "</div>";
+    }).join("") + "</div>";
   }).join("");
+
+  $("#work-groups").addEventListener("click", function (e) {
+    var b = e.target.closest(".card-set__item");
+    if (!b) return;
+    openViewer('<div class="viewer__reel">' + player(b.dataset.url, null, "9:16") +
+      '<p class="meta viewer__caption">' + esc(b.dataset.title) + "</p></div>", "dark", b.dataset.title);
+  });
 
   Array.prototype.forEach.call(document.querySelectorAll(".card"), function (card) {
     var v = card.querySelector(".card__preview");

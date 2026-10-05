@@ -113,15 +113,16 @@ window.PORTFOLIO = {
   categories: [
     { id: "personal",  label: "Personal" },
     { id: "freelance", label: "Freelance" },
-    { id: "cxl",       label: "CXL" },
-    { id: "xpand",     label: "Xpand IT" },
-    { id: "adagietto", label: "Adagietto" }
+    { id: "xpand",     label: "Xpand IT",  note: "In-house · Filmmaker / Photographer · Oct 2023 - Mar 2025" },
+    { id: "adagietto", label: "Adagietto", note: "Agency · Filmmaker / Photographer · Sep 2022 - Sep 2023" },
+    { id: "cxl",       label: "CXL",       note: "In-house · Video Editor · Mar 2025 - Present" }
   ],
 
   // Work sections on the page, in order. Each shows the films from its categories.
   groups: [
     { title: "Personal & Freelance", categories: ["personal", "freelance"] },
-    { title: "Jobs",                 categories: ["cxl", "xpand", "adagietto"] }
+    // split: true gives each company its own heading, in this order
+    { title: "Jobs",                 categories: ["xpand", "adagietto", "cxl"], split: true }
   ],
 
   // Films appear in their work group (featured ones first) and in the Index.
